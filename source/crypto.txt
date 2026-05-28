@@ -1,0 +1,11 @@
+# Custom Crypto Rules (加密货币/区块链规则)
+# ----------------------------------------
+# Add your custom rules below. Supported formats:
+# - Exact Domain: example.com
+# - Domain Suffix: *.example.com or +.example.com
+# - IP CIDR: 192.168.1.0/24 or 2001:db8::/32
+#
+# Examples:
+# binance.com
+# *.etherscan.io
+# 1.1.1.1/32
