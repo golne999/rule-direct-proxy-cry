@@ -36,3 +36,14 @@ A project for managing custom routing rules (direct, proxy, and crypto).
    python3 scripts/convert.py
    ```
    *If `sing-box` or `mihomo` CLIs are installed locally, binary format rules (`.srs` / `.mrs`) will also be compiled automatically.*
+
+3. Fixed local update command:
+   ```bash
+   cd /Users/koimas/Documents/Projects/github2026/rule-direct-proxy-cry
+   python3 scripts/convert.py
+   git add -A
+   git commit -m "update rules"
+   git push origin main
+   ```
+
+GitHub Actions also runs `scripts/convert.py` after `source/**`, `scripts/convert.py`, or workflow changes are pushed, then commits regenerated `sing-box` and `mihomo` outputs back to the repository.

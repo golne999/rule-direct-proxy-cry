@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'source/**'
+      - 'scripts/convert.py'
+      - '.github/workflows/update-rules.yml'
   workflow_dispatch: # Supports manual triggers
 
 permissions:

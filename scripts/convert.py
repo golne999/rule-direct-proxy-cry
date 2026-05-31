@@ -75,6 +75,10 @@ def build_singbox_ruleset(parsed):
 def write_yaml_payload(path, payload):
     """Write mihomo rule-provider YAML file."""
     with open(path, "w", encoding="utf-8") as f:
+        if not payload:
+            f.write("payload: []\n")
+            print(f"  📄 Written: {path}")
+            return
         f.write("payload:\n")
         for item in payload:
             f.write(f"  - '{item}'\n")
@@ -125,6 +129,22 @@ def compile_mihomo_mrs(yaml_path, mrs_path, rule_type="domain"):
         return False
 
 
+def write_mihomo_outputs(name, mihomo_dir, domains, suffixes, ip_cidrs):
+    """Write mihomo domain/ip YAML files and compile MRS when possible."""
+    mh_dom_yaml = mihomo_dir / f"{name}-domain.yaml"
+    domain_payload = to_mihomo_domain_payload(domains, suffixes)
+    write_yaml_payload(mh_dom_yaml, domain_payload)
+
+    mh_dom_mrs = mihomo_dir / f"{name}-domain.mrs"
+    compile_mihomo_mrs(mh_dom_yaml, mh_dom_mrs, "domain")
+
+    mh_ip_yaml = mihomo_dir / f"{name}-ip.yaml"
+    write_yaml_payload(mh_ip_yaml, ip_cidrs)
+
+    mh_ip_mrs = mihomo_dir / f"{name}-ip.mrs"
+    compile_mihomo_mrs(mh_ip_yaml, mh_ip_mrs, "ipcidr")
+
+
 def process_rules(name, parsed, singbox_dir, mihomo_dir):
     """Process a rule set, writing all formats."""
     print(f"\n{'='*50}")
@@ -149,22 +169,8 @@ def process_rules(name, parsed, singbox_dir, mihomo_dir):
     sb_srs = singbox_dir / f"{name}.srs"
     compile_singbox_srs(sb_json, sb_srs)
 
-    # 3. mihomo Domain YAML + MRS
-    if domains or suffixes:
-        mh_dom_yaml = mihomo_dir / f"{name}-domain.yaml"
-        payload = to_mihomo_domain_payload(domains, suffixes)
-        write_yaml_payload(mh_dom_yaml, payload)
-
-        mh_dom_mrs = mihomo_dir / f"{name}-domain.mrs"
-        compile_mihomo_mrs(mh_dom_yaml, mh_dom_mrs, "domain")
-
-    # 4. mihomo IP YAML + MRS
-    if ip_cidrs:
-        mh_ip_yaml = mihomo_dir / f"{name}-ip.yaml"
-        write_yaml_payload(mh_ip_yaml, ip_cidrs)
-
-        mh_ip_mrs = mihomo_dir / f"{name}-ip.mrs"
-        compile_mihomo_mrs(mh_ip_yaml, mh_ip_mrs, "ipcidr")
+    # 3. mihomo Domain/IP YAML + MRS
+    write_mihomo_outputs(name, mihomo_dir, domains, suffixes, ip_cidrs)
 
 
 def main():
@@ -185,6 +191,8 @@ def main():
 
     print(f"\n{'='*50}")
     print("✅ All conversions complete.")
+    print(f"  sing-box outputs: {singbox_dir}")
+    print(f"  mihomo outputs:   {mihomo_dir}")
 
 
 if __name__ == "__main__":
